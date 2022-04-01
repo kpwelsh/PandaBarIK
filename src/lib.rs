@@ -80,7 +80,7 @@ fn make_solver(urdf: &str, ee_frame: &str, arm_colliders : &str, environment : &
 }
 
 #[no_mangle]
-pub extern "cdecl" fn new_solver(urdf_ptr: *const c_char, ee_frame_ptr: *const c_char, arm_colliders_ptr: *const c_char, environment_ptr: *const c_char,) -> *const IKSolver {
+pub extern "C" fn new_solver(urdf_ptr: *const c_char, ee_frame_ptr: *const c_char, arm_colliders_ptr: *const c_char, environment_ptr: *const c_char,) -> *const IKSolver {
     let urdf = parse_c_str(urdf_ptr).unwrap();
     let ee_frame = parse_c_str(ee_frame_ptr).unwrap();
     let arm_colliders = parse_c_str(arm_colliders_ptr).unwrap();
@@ -120,20 +120,40 @@ fn try_solve(iksolver: *mut IKSolver, current_q_ptr: *mut f64, trans_ptr: *const
 }
 
 #[no_mangle]
-pub extern "cdecl" fn solve(iksolver: *mut IKSolver, current_q_ptr: *mut f64, trans_ptr: *const [f64; 7], q_ptr: *mut f64) {
-    if let Some(q) = try_solve(iksolver, current_q_ptr, trans_ptr) {
-        let q_array;
-        unsafe {
-            q_array = std::slice::from_raw_parts_mut(q_ptr, q.len());
-        };
-        for i in 0..q_array.len() {
-            q_array[i] = q[i];
+pub extern "C" fn solve(iksolver: *mut IKSolver, current_q_ptr: *mut f64, trans_ptr: *const [f64; 7], q_ptr: *mut f64) -> bool {
+    match try_solve(iksolver, current_q_ptr, trans_ptr) {
+        Some(q) => {
+            let q_array;
+            unsafe {
+                q_array = std::slice::from_raw_parts_mut(q_ptr, q.len());
+            };
+            for i in 0..q_array.len() {
+                q_array[i] = q[i];
+            }
+            true
+        }, 
+        None => {
+            false
         }
     }
 }
 
+
 #[no_mangle]
-pub extern "cdecl" fn deallocate(ptr: *mut IKSolver) {
+pub extern "C" fn dof(iksolver: *mut IKSolver) -> i32 {
+    match unsafe { iksolver.as_ref() } {
+        Some(solver) => {
+            solver.arm.dof() as i32
+        },
+        None => {
+            -1
+        }
+    }
+}
+
+
+#[no_mangle]
+pub extern "C" fn deallocate(ptr: *mut IKSolver) {
     if ptr.is_null() {
         return;
     }
