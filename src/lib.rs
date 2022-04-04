@@ -1,4 +1,4 @@
-#![allow(dead_code)]
+    #![allow(dead_code)]
 #![allow(unused_variables)]
 use std::collections::HashMap;
 use std::error::Error;
@@ -50,14 +50,26 @@ fn parse_c_str(s: *const c_char) -> Result<&'static str, Box<dyn Error>> {
 fn make_solver(urdf: &str, ee_frame: &str, arm_colliders : &str, environment : &str) -> Option<IKSolver> {
     let robot : k::Chain<f64> = urdf_rs::read_from_string(urdf).ok()?.into();
     let arm = k::SerialChain::from_end(robot.find(ee_frame)?);
+    let mut qs = Vec::new();
+    for i in 0..arm.dof() {
+        qs.push(0.);
+    }
+    arm.set_joint_positions_clamped(&qs);
+    arm.update_transforms();
 
-    let cache = PANOCCache::new(arm.dof(), 1e-6, 100);
+    let cache = PANOCCache::new(arm.dof(), 1e-8, 10000);
 
-    let arm_geometry : Vec<NamedGeometry> = serde_json::de::from_str(arm_colliders).ok()?;
+    let environment_geometry : Vec<Geometry> = serde_json::de::from_str(environment).ok()?;
+    let mut environment = ColliderSet::new();
+    
+    for env_geom in environment_geometry.iter() {
+        environment.insert(IntoCollider::into(env_geom));
+    }
+
+    let arm_geometry : Vec<NamedGeometry> = serde_json::de::from_str::<Vec<NamedGeometry>>(arm_colliders).ok()?;
     let mut arm_colliders = HashMap::<String, Collider>::new();
     for named_geom in arm_geometry {
         let mut collider = IntoCollider::into(&named_geom);
-
         let joint_trans = arm.find(&named_geom.name)?.world_transform().unwrap();
         let world_trans = collider.position().clone();
 
@@ -69,18 +81,12 @@ fn make_solver(urdf: &str, ee_frame: &str, arm_colliders : &str, environment : &
         );
     }
 
-    let environment_geometry : Vec<Geometry> = serde_json::de::from_str(environment).ok()?;
-    let mut environment = ColliderSet::new();
-    
-    for env_geom in environment_geometry {
-        environment.insert(IntoCollider::into(&env_geom));
-    }
     
     Some(IKSolver::new(cache, arm , arm_colliders, environment))
 }
 
 #[no_mangle]
-pub extern "C" fn new_solver(urdf_ptr: *const c_char, ee_frame_ptr: *const c_char, arm_colliders_ptr: *const c_char, environment_ptr: *const c_char,) -> *const IKSolver {
+pub extern "C" fn new_solver(urdf_ptr: *const c_char, ee_frame_ptr: *const c_char, arm_colliders_ptr: *const c_char, environment_ptr: *const c_char) -> *const IKSolver {
     let urdf = parse_c_str(urdf_ptr).unwrap();
     let ee_frame = parse_c_str(ee_frame_ptr).unwrap();
     let arm_colliders = parse_c_str(arm_colliders_ptr).unwrap();
@@ -109,12 +115,16 @@ fn try_solve(iksolver: *mut IKSolver, current_q_ptr: *mut f64, trans_ptr: *const
     let x = Vector3::new(trans[0], trans[1], trans[2]);
     let rot = UnitQuaternion::from_quaternion(Quaternion::new(trans[3], trans[4], trans[5], trans[6]));
     
-    
     let res = solver::solve(&iksolver.arm, &mut iksolver.cache, &iksolver.arm_colliders, &iksolver.environment, &x, &rot, &iksolver.lb, &iksolver.ub);
     res.and_then(|q| { 
         iksolver.arm.set_joint_positions_clamped(&current_q);
+        //let q = planner::lerp(&iksolver.arm, &q, &iksolver.arm_colliders, &iksolver.environment);
+        iksolver.arm.set_joint_positions_clamped(&q);
+        iksolver.arm.update_transforms();
+        println!("{:?}", &q);
+        return Some(q);
         Some(
-            planner::lerp(&iksolver.arm, &q, &iksolver.arm_colliders, &iksolver.environment)
+           q
         ) 
     })
 }

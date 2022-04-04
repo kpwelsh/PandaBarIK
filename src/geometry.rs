@@ -2,7 +2,7 @@ use serde::{Deserialize, Serialize};
 use rapier3d_f64::geometry::*;
 use rapier3d_f64::na as na;
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Clone)]
 pub enum Geometry {
     Box {
         x : [f64; 3],
@@ -21,7 +21,7 @@ pub enum Geometry {
     }
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct NamedGeometry {
     pub name : String,
     pub geometry : Geometry

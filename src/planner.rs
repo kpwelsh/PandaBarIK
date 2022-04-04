@@ -30,7 +30,6 @@ pub fn lerp(arm: &k::SerialChain<f64>, end: &Vec<f64>,
     let mut last_valid_step = q.clone();
     while step(&mut q, dq, &end) {
         arm.set_joint_positions_clamped(&q);
-        arm.update_transforms();
         
         if collision_check(arm, robot_geometry, static_geometry,cutoff) {
             return last_valid_step;
@@ -57,7 +56,7 @@ fn step(x : &mut Vec<f64>, dx: f64, goal: &Vec<f64>) -> bool {
 fn collision_check(arm: &k::SerialChain<f64>,
     robot_geometry: &HashMap<String, Collider>, static_geometry: &ColliderSet,
     cutoff: f64) -> bool {
-
+    arm.update_transforms();
     for joint in arm.iter_joints().filter(|j| j.is_movable()) {
 
         if let Some(collider) = robot_geometry.get(&joint.name) {

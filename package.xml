@@ -13,11 +13,9 @@
 
   <depend>roscpp</depend>
   <depend>std_msgs</depend>
-
-  <build_depend>message_generation</build_depend>
+  <depend>geometry_msgs</depend>
+  <depend>franka_core_msgs</depend>
 
   <exec_depend>message_runtime</exec_depend>
   <exec_depend>rospy</exec_depend>
-
-  <doc_depend>doxygen</doc_depend>
 </package>

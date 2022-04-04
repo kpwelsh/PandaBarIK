@@ -58,7 +58,7 @@ pub fn position_gradient(current_position: &Vector3<f64>, desired_position: &Vec
 }
 
 pub fn rotation_cost(current_rotation: &UnitQuaternion<f64>, desired_rotation: &UnitQuaternion<f64>) -> f64 {
-    groove_loss(current_rotation.angle_to(desired_rotation).powi(2), 0., 2, 0.1, 10.0, 2)
+    3.0 * groove_loss(current_rotation.angle_to(desired_rotation).powi(2), 0., 2, 0.1, 10.0, 2)
 }
 
 pub fn rotation_gradient(current_rotation: &UnitQuaternion<f64>, desired_rotation: &UnitQuaternion<f64>) -> Vector3<f64> {

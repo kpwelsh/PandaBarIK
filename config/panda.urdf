@@ -8,24 +8,31 @@
   <link name="panda_link0">
     <visual>
       <geometry>
-        <mesh filename="package://franka_description/meshes/visual/link0.dae"/>
+        <mesh filename="package://drone_panda/meshes/visual/link0.dae"/>
       </geometry>
     </visual>
     <collision>
       <geometry>
-        <mesh filename="package://franka_description/meshes/collision/link0.stl"/>
+        <mesh filename="package://drone_panda/meshes/collision/link0.stl"/>
       </geometry>
     </collision>
   </link>
+  <link name="map" />
+  <joint name="panda_base_map" type="fixed">
+    <origin rpy="0 0 0" xyz="0 0 0.0"/>
+    <parent link="panda_link0"/>
+    <child link="map"/>
+    <axis xyz="0 0 0"/>
+  </joint>
   <link name="panda_link1">
     <visual>
       <geometry>
-        <mesh filename="package://franka_description/meshes/visual/link1.dae"/>
+        <mesh filename="package://drone_panda/meshes/visual/link1.dae"/>
       </geometry>
     </visual>
     <collision>
       <geometry>
-        <mesh filename="package://franka_description/meshes/collision/link1.stl"/>
+        <mesh filename="package://drone_panda/meshes/collision/link1.stl"/>
       </geometry>
     </collision>
   </link>
@@ -40,12 +47,12 @@
   <link name="panda_link2">
     <visual>
       <geometry>
-        <mesh filename="package://franka_description/meshes/visual/link2.dae"/>
+        <mesh filename="package://drone_panda/meshes/visual/link2.dae"/>
       </geometry>
     </visual>
     <collision>
       <geometry>
-        <mesh filename="package://franka_description/meshes/collision/link2.stl"/>
+        <mesh filename="package://drone_panda/meshes/collision/link2.stl"/>
       </geometry>
     </collision>
   </link>
@@ -60,12 +67,12 @@
   <link name="panda_link3">
     <visual>
       <geometry>
-        <mesh filename="package://franka_description/meshes/visual/link3.dae"/>
+        <mesh filename="package://drone_panda/meshes/visual/link3.dae"/>
       </geometry>
     </visual>
     <collision>
       <geometry>
-        <mesh filename="package://franka_description/meshes/collision/link3.stl"/>
+        <mesh filename="package://drone_panda/meshes/collision/link3.stl"/>
       </geometry>
     </collision>
   </link>
@@ -80,12 +87,12 @@
   <link name="panda_link4">
     <visual>
       <geometry>
-        <mesh filename="package://franka_description/meshes/visual/link4.dae"/>
+        <mesh filename="package://drone_panda/meshes/visual/link4.dae"/>
       </geometry>
     </visual>
     <collision>
       <geometry>
-        <mesh filename="package://franka_description/meshes/collision/link4.stl"/>
+        <mesh filename="package://drone_panda/meshes/collision/link4.stl"/>
       </geometry>
     </collision>
   </link>
@@ -95,17 +102,17 @@
     <parent link="panda_link3"/>
     <child link="panda_link4"/>
     <axis xyz="0 0 1"/>
-    <limit effort="87" lower="-3.0718" upper="-0.2698" velocity="2.1750"/>
+    <limit effort="87" lower="-3.0718" upper="-0.1698" velocity="2.1750"/>
   </joint>
   <link name="panda_link5">
     <visual>
       <geometry>
-        <mesh filename="package://franka_description/meshes/visual/link5.dae"/>
+        <mesh filename="package://drone_panda/meshes/visual/link5.dae"/>
       </geometry>
     </visual>
     <collision>
       <geometry>
-        <mesh filename="package://franka_description/meshes/collision/link5.stl"/>
+        <mesh filename="package://drone_panda/meshes/collision/link5.stl"/>
       </geometry>
     </collision>
   </link>
@@ -120,12 +127,12 @@
   <link name="panda_link6">
     <visual>
       <geometry>
-        <mesh filename="package://franka_description/meshes/visual/link6.dae"/>
+        <mesh filename="package://drone_panda/meshes/visual/link6.dae"/>
       </geometry>
     </visual>
     <collision>
       <geometry>
-        <mesh filename="package://franka_description/meshes/collision/link6.stl"/>
+        <mesh filename="package://drone_panda/meshes/collision/link6.stl"/>
       </geometry>
     </collision>
   </link>
@@ -140,12 +147,12 @@
   <link name="panda_link7">
     <visual>
       <geometry>
-        <mesh filename="package://franka_description/meshes/visual/link7.dae"/>
+        <mesh filename="package://drone_panda/meshes/visual/link7.dae"/>
       </geometry>
     </visual>
     <collision>
       <geometry>
-        <mesh filename="package://franka_description/meshes/collision/link7.stl"/>
+        <mesh filename="package://drone_panda/meshes/collision/link7.stl"/>
       </geometry>
     </collision>
   </link>
@@ -157,16 +164,15 @@
     <axis xyz="0 0 1"/>
     <limit effort="12" lower="-2.8973" upper="2.8973" velocity="2.6100"/>
   </joint>
-  
   <link name="ft_sensor_link">
     <visual>
       <geometry>
-        <mesh filename="package://authoring/meshes/force_torque_sensor.dae"/>
+        <mesh filename="package://drone_panda/meshes/force_torque_sensor.dae"/>
       </geometry>
     </visual>
     <collision>
       <geometry>
-        <mesh filename="package://authoring/meshes/force_torque_sensor.stl"/>
+        <mesh filename="package://drone_panda/meshes/force_torque_sensor.stl"/>
       </geometry>
     </collision>
   </link>
@@ -176,7 +182,6 @@
     <child link="ft_sensor_link"/>
     <axis xyz="0 0 0"/>
   </joint>
-  
   <link name="panda_link8"/>
   <joint name="panda_joint8" type="fixed">
     <!--<origin rpy="0 0 0" xyz="0 0 0.107"/>-->
@@ -194,24 +199,24 @@
   <link name="panda_hand">
     <visual>
       <geometry>
-        <mesh filename="package://franka_description/meshes/visual/hand.dae"/>
+        <mesh filename="package://drone_panda/meshes/visual/hand.dae"/>
       </geometry>
     </visual>
     <collision>
       <geometry>
-        <mesh filename="package://franka_description/meshes/collision/hand.stl"/>
+        <mesh filename="package://drone_panda/meshes/collision/hand.stl"/>
       </geometry>
     </collision>
   </link>
   <link name="panda_leftfinger">
     <visual>
       <geometry>
-        <mesh filename="package://franka_description/meshes/visual/finger.dae"/>
+        <mesh filename="package://drone_panda/meshes/visual/finger.dae"/>
       </geometry>
     </visual>
     <collision>
       <geometry>
-        <mesh filename="package://franka_description/meshes/collision/finger.stl"/>
+        <mesh filename="package://drone_panda/meshes/collision/finger.stl"/>
       </geometry>
     </collision>
   </link>
@@ -219,13 +224,13 @@
     <visual>
       <origin rpy="0 0 3.14159265359" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="package://franka_description/meshes/visual/finger.dae"/>
+        <mesh filename="package://drone_panda/meshes/visual/finger.dae"/>
       </geometry>
     </visual>
     <collision>
       <origin rpy="0 0 3.14159265359" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="package://franka_description/meshes/collision/finger.stl"/>
+        <mesh filename="package://drone_panda/meshes/collision/finger.stl"/>
       </geometry>
     </collision>
   </link>
@@ -258,38 +263,24 @@
   </material>
   <link name="camera_body">
     <visual>
-      <origin xyz="0. 0. 0."/>
+      <origin rpy="0 3.1416 0"  xyz=".047 0.04 0.0115"/>
       <geometry>
-        <box size="0.0994 0.0996 0.023"/>
+        <mesh filename="package://drone_panda/meshes/visual/kinect-model.stl"/>
       </geometry>
       <material name="white"/>
     </visual>
   </link>
   <link name="camera_base">
-    <visual>
-      <origin xyz="-0.013 0. 0."/>
-      <geometry>
-        <box size="0.026 0.103 0.039"/>
-      </geometry>
-      <material name="grey"/>
-    </visual>
   </link>
   <link name="camera_visor">
-    <visual>
-      <origin xyz="-0.0128 0. 0."/>
-      <geometry>
-        <box size="0.026 0.101 0.037"/>
-      </geometry>
-      <material name="black"/>
-    </visual>
   </link>
   <joint name="fake_base" type="fixed">
-    <parent link="panda_link6"/>
+    <parent link="panda_hand"/>
     <child link="camera_base"/>
     <!--<origin xyz="-0.032 0.038 0.031" rpy="-2.731 -1.517 -1.209" />-->
     <!--<origin xyz="-0.052 -0.008 -0.071" rpy="-1.553 -0.582 -1.587" />-->
     <!--<origin xyz="0.032 -0.064 0.053" rpy="-0.389 -1.554 2.542" />-->
-    <origin rpy="-1.586 0.010 -1.585" xyz="0.156 -0.041 0.00"/>
+    <origin rpy="3.14 -1.57 0.0" xyz="0.08211274 0.0 0.00823"/>
   </joint>
   <joint name="camera_base_to_body" type="fixed">
     <parent link="camera_base"/>
@@ -300,6 +291,20 @@
     <parent link="camera_base"/>
     <child link="camera_visor"/>
     <origin rpy="0. 0. 0." xyz="0. 0. 0."/>
+  </joint>
+  <link name="panda_gripper" />
+  <joint name="panda_gripper_joint" type="fixed">
+    <origin rpy="3.1416 0.000 -0.785" xyz="-0.000 -0.000 0.103" />
+    <parent link="panda_link8"/>
+    <child link="panda_gripper"/>
+    <axis xyz="0 0 0"/>
+  </joint>
+  <link name="sander" />
+  <joint name="sander_joint" type="fixed">
+    <origin rpy="3.1416 0.000 -0.785" xyz="-0.000 -0.000 0.144" />
+    <parent link="panda_link8"/>
+    <child link="sander"/>
+    <axis xyz="0 0 0"/>
   </joint>
   <!--<xacro:sensor_d435 parent="panda_link8">
 		<origin xyz="-0.032 0.038 0.031" rpy="-2.731 -1.517 -1.209" />
