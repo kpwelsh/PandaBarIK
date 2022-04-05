@@ -98,11 +98,10 @@ fn collision_cost(arm: &k::SerialChain<f64>, robot_geometry: &HashMap<String, Co
     c
 }
 
-fn regularization(arm: &k::SerialChain<f64>, u: &[f64]) -> f64 {
+fn regularization(current_q: &Vec<f64>, u: &[f64]) -> f64 {
     let mut c = 0.;
-    let joints = arm.joint_positions();
     for i in 0..u.len() {
-        c += 1.0 * (joints[i] - u[i]).powi(2);
+        c += 0.0 * (current_q[i] - u[i]).powi(2);
     }
     c
 }
@@ -119,9 +118,10 @@ pub fn solve(arm: &k::SerialChain<f64>, mut cache: &mut PANOCCache,
     let trans = arm.end_transform();
     let angle = trans.rotation.rotation_to(&rot_k).angle(); 
     let disp = (x_k - trans.translation.vector).magnitude();
-    let x_k = trans.translation.vector.lerp(&x_k, disp.min(0.02) / disp);
-    let rot_k = trans.rotation.slerp(&rot_k, angle.min(0.02) / angle);
+    // let x_k = trans.translation.vector.lerp(&x_k, disp.min(0.02) / disp);
+    // let rot_k = trans.rotation.slerp(&rot_k, angle.min(0.02) / angle);
 
+    let current_q = arm.joint_positions();
     let cost = |u: &[f64], c: &mut f64| {
         arm.set_joint_positions_clamped(u);
         arm.update_transforms();
@@ -134,8 +134,8 @@ pub fn solve(arm: &k::SerialChain<f64>, mut cache: &mut PANOCCache,
         //let s2 = sigma.powi(2);
         let rotation_decay = 1.;//(-(&trans.translation.vector - &x_k).magnitude_squared() / (2. * s2)).exp();
         *c += rotation_decay * rotation_cost(&trans.rotation, &rot_k);
-        //*c += collision_cost(arm, &robot_geometry, static_geometry);
-        *c += regularization(arm, u);
+        *c += collision_cost(arm, &robot_geometry, static_geometry);
+        *c += regularization(&current_q, u);
         Ok(())
     };
 
@@ -143,7 +143,6 @@ pub fn solve(arm: &k::SerialChain<f64>, mut cache: &mut PANOCCache,
         finite_difference(&cost, u, grad)
     };
 
-    let current_q = arm.joint_positions();
     let mut u = current_q.clone();
     
     let bounds = Rectangle::new(Some(&lb[..]), Some(&ub[..]));
@@ -156,7 +155,7 @@ pub fn solve(arm: &k::SerialChain<f64>, mut cache: &mut PANOCCache,
     arm.set_joint_positions_clamped(&u);
 
     //let jksolver = k::JacobianIkSolver::new(0.05, 0.05, 1., 100);
-    let mut panoc = PANOCOptimizer::new(problem, &mut cache).with_max_iter(100).with_max_duration(Duration::from_millis(2));
+    let mut panoc = PANOCOptimizer::new(problem, &mut cache).with_max_iter(10).with_max_duration(Duration::from_millis(2));
     let status = panoc.solve(&mut u);
     // let jsstatus = jksolver.solve(&arm, &na::Isometry3::from_parts(
     //     na::Translation { vector: *x }, 

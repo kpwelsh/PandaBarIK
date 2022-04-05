@@ -86,6 +86,7 @@ int main(int argc, char** argv) {
             out_msg.mode = franka_core_msgs::JointCommand::POSITION_MODE;
 
             pub.publish(out_msg);
+            
         } else {
             ROS_WARN("Couldn't do some IK");
         }

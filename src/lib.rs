@@ -57,7 +57,7 @@ fn make_solver(urdf: &str, ee_frame: &str, arm_colliders : &str, environment : &
     arm.set_joint_positions_clamped(&qs);
     arm.update_transforms();
 
-    let cache = PANOCCache::new(arm.dof(), 1e-8, 10000);
+    let cache = PANOCCache::new(arm.dof(), 1e-6, 10);
 
     let environment_geometry : Vec<Geometry> = serde_json::de::from_str(environment).ok()?;
     let mut environment = ColliderSet::new();
@@ -114,14 +114,13 @@ fn try_solve(iksolver: *mut IKSolver, current_q_ptr: *mut f64, trans_ptr: *const
 
     let x = Vector3::new(trans[0], trans[1], trans[2]);
     let rot = UnitQuaternion::from_quaternion(Quaternion::new(trans[3], trans[4], trans[5], trans[6]));
-    
+    iksolver.arm.set_joint_positions_clamped(&current_q);
     let res = solver::solve(&iksolver.arm, &mut iksolver.cache, &iksolver.arm_colliders, &iksolver.environment, &x, &rot, &iksolver.lb, &iksolver.ub);
     res.and_then(|q| { 
         iksolver.arm.set_joint_positions_clamped(&current_q);
         //let q = planner::lerp(&iksolver.arm, &q, &iksolver.arm_colliders, &iksolver.environment);
         iksolver.arm.set_joint_positions_clamped(&q);
         iksolver.arm.update_transforms();
-        println!("{:?}", &q);
         return Some(q);
         Some(
            q
